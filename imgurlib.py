@@ -88,14 +88,17 @@ class ImgurLib:
         except UserAuthenticationException:
             return False
 
-    def get_auth_url(self):
+    def get_auth_url(self,callback_url=None):
         """Generate Authorization URL
 
         Generates an url, so the user can open it in order to enable
         access to get access to the user account. A Pin code is given in
         that page, that should be used in the authorize() method.
         """
-        resp, content = self.client.request(REQUEST_TOKEN_URL, "POST")
+        body=None
+        if callback_url is not None:
+            body = 'oauth_callback=%s' % (callback_url)
+        resp, content = self.client.request(REQUEST_TOKEN_URL, "POST",body=body)
         result = dict(urlparse.parse_qsl(content))
         oauth_token = result['oauth_token']
         oauth_token_secret = result['oauth_token_secret']
